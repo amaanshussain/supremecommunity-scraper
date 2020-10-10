@@ -2,11 +2,13 @@ import requests
 import bs4
 import dhooks
 
-
+# gets source code of supremecommunity link
 siteLink = input("Enter link of page\n")
 site = requests.get(siteLink, timeout = 10)
 sourceCode = bs4.BeautifulSoup(site.content, "html.parser")
+# -----------------------------------------
 
+# initializes webhook
 userWebhook = input("Please input your webhook.\n")
 userWebhook = userWebhook.split("discordapp")
 webhook = userWebhook[0] + "discord" + userWebhook[1]
@@ -15,7 +17,9 @@ try:
 except ValueError as error:
 	print(error)
 	exit()
-	
+# -------------------
+
+# gets all necessary data for webhook
 title = sourceCode.find("title")
 logo = sourceCode.find("meta", {"property": "og:image"})
 dropDate = sourceCode.find("h1")
@@ -23,6 +27,9 @@ itemTitles = sourceCode.find_all("h2", {"class": "item-details-title"})
 itemImages = sourceCode.find_all("img", {"class": "prefill-img"})
 upvotes = sourceCode.find_all("div", {"class": "progress-bar-success"})
 downvotes = sourceCode.find_all("div", {"class": "progress-bar-danger"})
+# -----------------------------------
+
+# repeats loop for amount of items on site
 for x in range(len(itemTitles)):
 
 	embed = dhooks.Embed(
@@ -36,3 +43,4 @@ for x in range(len(itemTitles)):
 	embed.add_field(name = "Upvotes", value = upvotes[x].text)
 	embed.add_field(name = "Downvotes", value = downvotes[x].text)
 	webhook.send(embed = embed, username = "Supreme Community", avatar_url = logo['content'])
+# -----------------------------------------
